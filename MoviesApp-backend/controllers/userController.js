@@ -1,4 +1,5 @@
 const userSchema = require('../models/User');
+const axios = require('axios').default;
 const jwt = require('jsonwebtoken');
 
 const loginUser = async (req, res) => {
@@ -32,7 +33,37 @@ const registerUser = async (req, res) => {
     }
 }
 
+const tmdbGetTrendingMovies = async (req, res) => {
+    try {
+        let trendingMovies = await axios.get(`https://api.themoviedb.org/3/trending/movie/${req.params.trend}?api_key=${process.env.TMDB_API_KEY}&page=${req.params.page}`);
+        res.status(200).json(trendingMovies.data);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const tmdbGetTrendingPeople = async (req, res) => {
+    try {
+        let trendingPeople = await axios.get(`https://api.themoviedb.org/3/person/popular?api_key=${process.env.TMDB_API_KEY}&page=${req.params.page}`);
+        res.status(200).json(trendingPeople.data);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const tmdbGetSearchResults = async (req, res) => {
+    try {
+        let searchRes = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&query=${req.params.query}`);
+        res.status(200).json(searchRes.data);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 module.exports = {
     loginUser,
-    registerUser
+    registerUser,
+    tmdbGetTrendingMovies,
+    tmdbGetTrendingPeople,
+    tmdbGetSearchResults
 }
