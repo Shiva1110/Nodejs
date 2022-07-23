@@ -71,7 +71,16 @@ const addFavorite = async (req, res) => {
 
 const removeFavorite = async (req, res) => {
     try {
-        let user = await userSchema.findByIdAndUpdate(req.userId, { "$pull": { "favorites": { id: req.params.movieId } } }, { safe: true, new: true, upsert: true });
+        let user = await userSchema.findByIdAndUpdate(req.userId, { "$pull": { "favorites": { id: Number(req.params.movieId) } } }, { safe: true, new: true, upsert: true });
+        res.status(200).json(user.favorites);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const getFavorites = async (req, res) => {
+    try {
+        let user = await userSchema.findById(req.userId);
         res.status(200).json(user.favorites);
     } catch(error) {
         res.status(400).json({ success: false, message: error.message });
@@ -85,5 +94,6 @@ module.exports = {
     tmdbGetTrendingPeople,
     tmdbGetSearchResults,
     addFavorite,
-    removeFavorite
+    removeFavorite,
+    getFavorites
 }
