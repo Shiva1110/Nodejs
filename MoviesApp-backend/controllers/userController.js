@@ -60,10 +60,30 @@ const tmdbGetSearchResults = async (req, res) => {
     }
 }
 
+const addFavorite = async (req, res) => {
+    try {
+        let user = await userSchema.findByIdAndUpdate(req.userId, { "$push": { "favorites": req.body } }, { "new": true, "upsert": true });
+        res.status(200).json(user.favorites);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const removeFavorite = async (req, res) => {
+    try {
+        let user = await userSchema.findByIdAndUpdate(req.userId, { "$pull": { "favorites": { id: req.params.movieId } } }, { safe: true, new: true, upsert: true });
+        res.status(200).json(user.favorites);
+    } catch(error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 module.exports = {
     loginUser,
     registerUser,
     tmdbGetTrendingMovies,
     tmdbGetTrendingPeople,
-    tmdbGetSearchResults
+    tmdbGetSearchResults,
+    addFavorite,
+    removeFavorite
 }
